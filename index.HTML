@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gramophone</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="app">
+
+        <div id="gramophone">
+
+            <div id="record">
+              <div id="grooves"></div>
+             <div id="label">
+               <img id="coverImage" alt="Album Cover" draggable="false">
+                 <div id="hole"></div>
+                 <div id="spindle"></div>
+               </div>
+             </div>
+            <div id="tonearm">
+                 <div id="toneBase"></div>
+                 <div id="armJoint"></div>
+              <div id="needle">
+                <div id="needleTip"></div>
+              </div>
+            </div>
+           <div id="horn">
+             <div id="hornInside"></div>
+             <div id="hornRim"></div>
+           </div>
+             <button id="playBtn">▶</button>
+<button id="resetBtn">↺</button>
+
+<div id="progressContainer">
+    <div id="progress"></div>
+</div>
+
+<div id="timeDisplay">00:00 / 00:00</div>
+<div id="songInfo">
+    <div id="songTitle">Unknown Song</div>
+    <div id="artistName">Unknown Artist</div>
+</div>
+<input
+    type="range"
+    id="volume"
+    min="0"
+    max="1"
+    step="0.01"
+    value="1">
+</div>
+</div>
+<input
+    type="file"
+    id="fileInput"
+    accept="audio/*"
+    hidden>
+<audio id="music" src="music.mp3"></audio>
+<script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.7/dist/jsmediatags.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
