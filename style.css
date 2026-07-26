@@ -1,11 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
 
 /* ============================================================
-   CLASSIC TABLETOP GRAMOPHONE — inspired by the reference photo
-   Wood:  #6b4020 walnut highlight -> #2c1a0d deep walnut
-   Brass: #6b4a17 deep -> #c9a24d mid -> #f3d98a bright
-   Chrome: #e8e8e8 -> #8a8a8a
-   Red label: #b23a3a -> #4a1010
+   The gramophone itself (record, horn, tonearm, cabinet) is now
+   real 3D geometry rendered by gramophone3d.js into #scene3d.
+   This stylesheet only handles page layout and the flat HTML
+   controls (buttons, progress, time, song info, volume) that
+   sit on top of the canvas.
    ============================================================ */
 
 * {
@@ -34,255 +34,20 @@ body {
     height: 430px;
     max-width: 95vw;
 
-    background:
-        linear-gradient(to bottom, transparent 0%, transparent 58%, rgba(0,0,0,0.32) 60%, rgba(0,0,0,0.32) 100%),
-        repeating-linear-gradient(
-            100deg,
-            rgba(255,220,160,0.05) 0px,
-            rgba(255,220,160,0.05) 2px,
-            rgba(0,0,0,0.12) 4px,
-            rgba(0,0,0,0.12) 8px
-        ),
-        linear-gradient(150deg, #6b4020 0%, #4a2c16 42%, #2c1a0d 78%, #1e0f06 100%);
-
-    border-radius: 10px;
-    border: 3px solid #8a611f;
-
-    box-shadow:
-        0 22px 40px rgba(0,0,0,0.55),
-        inset 0 0 0 2px rgba(0,0,0,0.35),
-        inset 0 2px 3px rgba(255,210,140,0.12);
-
     position: relative;
 }
 
-/* small turned wooden feet */
-#gramophone::after {
-    content: "";
+#scene3d {
     position: absolute;
-    width: 18px;
-    height: 14px;
-    left: 16px;
-    bottom: -12px;
-
-    background: #2a1810;
-    border-radius: 3px;
-    box-shadow: 270px 0 0 #2a1810;
-}
-
-#record {
-    width: 178px;
-    height: 178px;
-
-    background:
-        repeating-radial-gradient(
-            circle at center,
-            rgba(255,255,255,0.04) 0px,
-            rgba(255,255,255,0.04) 1px,
-            transparent 2px,
-            transparent 5px
-        ),
-        radial-gradient(circle at 35% 30%, #4a4a4a, #121212 35%, #050505 75%, #000);
-
-    border: 2px solid #0c0c0c;
-    border-radius: 50%;
-
-    box-shadow:
-        0 0 0 3px #8a611f,
-        0 0 0 5px #1e0f06,
-        0 8px 16px rgba(0,0,0,0.5);
-
-    position: absolute;
-    z-index: 1;
-
-    top: 66px;
-    left: 70px;
-    transform-origin: center;
-}
-
-#label {
-    width: 46px;
-    height: 46px;
-
-    overflow: hidden;
-    background: radial-gradient(circle, #c74a4a, #8a2222 65%, #4a1010);
-
-    border-radius: 50%;
-    box-shadow:
-        0 0 0 2px #2c1a0d,
-        inset 0 1px 3px rgba(255,255,255,0.25),
-        inset 0 -2px 4px rgba(0,0,0,0.4);
-
-    position: absolute;
-
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-#grooves {
-    width: 138px;
-    height: 138px;
-
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 50%;
-
-    position: absolute;
-
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-#hole {
-    width: 8px;
-    height: 8px;
-
-    background: #111;
-    border-radius: 50%;
-
-    position: absolute;
-
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-#spindle {
-    width: 7px;
-    height: 7px;
-
-    background: radial-gradient(circle, #f2f2f2, #9a9a9a 70%, #555);
-    border-radius: 50%;
-    box-shadow: 0 0 4px rgba(255,255,255,0.7);
-
-    position: absolute;
-
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-/* --- Tonearm: thin brass rod pivoting on a chrome swivel --- */
-#tonearm {
-    width: 100px;
-    height: 4px;
-
-    background: linear-gradient(to bottom, #f3d98a, #c9a24d 45%, #8a611f, #d9b877);
-    border-radius: 3px;
-
-    box-shadow: 0 2px 3px rgba(0,0,0,0.5);
-
-    position: absolute;
-    z-index: 3;
-
-    top: 148px;
-    right: 133px;
-
-    transform: rotate(-35deg);
-    transform-origin: right center;
-}
-
-#toneBase {
-    width: 16px;
-    height: 16px;
-
-    background: radial-gradient(circle, #e8e8e8, #9a9a9a 70%, #555);
-    border-radius: 50%;
-    box-shadow:
-        0 0 3px rgba(255,255,255,0.4),
-        inset -2px -2px 4px rgba(0,0,0,0.35);
-
-    position: absolute;
-
-    right: -6px;
-    top: -6px;
-}
-
-#armJoint {
-    width: 8px;
-    height: 8px;
-
-    background: radial-gradient(circle, #f0f0f0, #9a9a9a 70%, #555);
-    border-radius: 50%;
-
-    position: absolute;
-
-    right: 4px;
-    top: -2px;
-}
-
-#needle {
-    width: 10px;
-    height: 10px;
-
-    background: #2c1a0d;
-    border-radius: 50%;
-
-    position: absolute;
-
-    left: 6px;
-    top: -1px;
-}
-
-#needleTip {
-    width: 4px;
-    height: 4px;
-
-    background: #e8e8e8;
-    border-radius: 50%;
-
-    position: absolute;
-
-    left: 1px;
-    top: 3px;
-}
-
-/* --- Horn: SVG silhouette, positioned so its neck joint meets the tonearm pivot --- */
-#horn {
-    width: 140px;
-    height: 180px;
-
-    position: absolute;
-    z-index: 2;
-
-    top: -18px;
-    left: 170px;
-
-    filter: drop-shadow(4px 8px 10px rgba(0,0,0,0.5));
-}
-
-#hornSvg {
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    overflow: visible;
+
+    display: block;
 }
 
-#hornInside,
-#hornRim {
-    display: none;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-}
-
-@keyframes armMove {
-    0%   { transform: rotate(-35deg); }
-    100% { transform: rotate(-25deg); }
-}
-
-.moveArm {
-    animation: armMove 12s linear forwards;
-    animation-play-state: running;
-}
-
-.spin {
-    animation: spin 3s linear infinite;
-}
-
-/* ================= Control panel ================= */
+/* ================= Control panel (overlaid on the 3D scene) ================= */
 
 #songInfo {
     position: absolute;
@@ -306,7 +71,7 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
 
-    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.7);
 }
 
 #artistName {
@@ -322,6 +87,8 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
 
 #progressContainer {
@@ -366,6 +133,7 @@ body {
     letter-spacing: 0.5px;
 
     user-select: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
 
 #resetBtn {
@@ -474,27 +242,6 @@ body {
 
     cursor: pointer;
     accent-color: #c9a24d;
-}
-
-#coverImage {
-    width: 100%;
-    height: 100%;
-
-    border-radius: 50%;
-    object-fit: cover;
-
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    display: none;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-
-    -webkit-user-drag: none;
-    user-select: none;
-    -webkit-user-select: none;
 }
 
 /* ---------- Tablet ---------- */
