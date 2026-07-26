@@ -11,9 +11,9 @@
     const scene = new THREE.Scene();
     scene.background = null;
 
-    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
-    camera.position.set(0, 3.4, 4.6);
-    camera.lookAt(0, 0.1, 0);
+    const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 50);
+    camera.position.set(0, 3.0, 5.0);
+    camera.lookAt(0, 0.6, 0);
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -38,10 +38,6 @@
     const fillLight = new THREE.PointLight(0xffe6bf, 0.6, 15);
     fillLight.position.set(3, 2, 4);
     scene.add(fillLight);
-
-    const rimLight = new THREE.DirectionalLight(0x88aaff, 0.25);
-    rimLight.position.set(0, 2, -4);
-    scene.add(rimLight);
 
     /* ---------------- cabinet ---------------- */
     const cabinetMat = new THREE.MeshStandardMaterial({ color: 0x4a2c16, roughness: 0.55, metalness: 0.05 });
@@ -74,7 +70,7 @@
 
     const recordGeo = new THREE.CylinderGeometry(1.55, 1.55, 0.06, 96);
     const recordSideMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.35, metalness: 0.4 });
-    const recordTopMat = new THREE.MeshStandardMaterial({ map: grooveTexture(), roughness: 0.3, metalness: 0.5 });
+    const recordTopMat = new THREE.MeshStandardMaterial({ map: grooveTexture(), roughness: 0.55, metalness: 0.15 });
     const recordBottomMat = recordSideMat;
     const record = new THREE.Mesh(recordGeo, [recordSideMat, recordTopMat, recordBottomMat]);
     record.position.y = 0.03;
@@ -113,13 +109,13 @@
     const bellPoints = [];
     for (let i = 0; i <= 10; i++) {
         const t = i / 10;
-        bellPoints.push(new THREE.Vector2(0.12 + Math.pow(t, 1.6) * 0.85, t * 0.55));
+        bellPoints.push(new THREE.Vector2(0.1 + Math.pow(t, 1.4) * 0.38, t * 0.32));
     }
     const bellGeo = new THREE.LatheGeometry(bellPoints, 40);
     const bell = new THREE.Mesh(bellGeo, brassMat);
 
-    const bellInner = new THREE.Mesh(new THREE.CircleGeometry(0.9, 40), darkMat);
-    bellInner.position.y = 0.54;
+    const bellInner = new THREE.Mesh(new THREE.CircleGeometry(0.34, 40), darkMat);
+    bellInner.position.y = 0.315;
     bellInner.rotation.x = -Math.PI / 2;
 
     const bellGroup = new THREE.Group();
