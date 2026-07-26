@@ -11,13 +11,15 @@
     const scene = new THREE.Scene();
     scene.background = null;
 
-    const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 50);
-    camera.position.set(0, 3.0, 5.0);
-    camera.lookAt(0, 0.6, 0);
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 50);
+    camera.position.set(-2.6, 2.5, 4.6);
+    camera.lookAt(0, 0.55, -0.1);
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
 
     function resize() {
         const w = container.clientWidth;
@@ -39,16 +41,93 @@
     fillLight.position.set(3, 2, 4);
     scene.add(fillLight);
 
+    const hornHighlight1 = new THREE.PointLight(0xfff2d0, 0.9, 8);
+    hornHighlight1.position.set(-1.2, 2.6, -0.6);
+    scene.add(hornHighlight1);
+
+    const hornHighlight2 = new THREE.PointLight(0xffe0a0, 0.5, 8);
+    hornHighlight2.position.set(1.0, 1.2, 1.6);
+    scene.add(hornHighlight2);
+
+    const frontFill = new THREE.PointLight(0xffe8c2, 0.35, 10);
+    frontFill.position.set(0, 0.6, 3.2);
+    scene.add(frontFill);
+
+    /* a soft procedural environment so the brass/chrome picks up believable reflections */
+    try {
+        const pmrem = new THREE.PMREMGenerator(renderer);
+        const envCanvas = document.createElement("canvas");
+        envCanvas.width = 64; envCanvas.height = 64;
+        const ectx = envCanvas.getContext("2d");
+        const grad = ectx.createLinearGradient(0, 0, 0, 64);
+        grad.addColorStop(0, "#3a2410");
+        grad.addColorStop(0.5, "#ffd9a0");
+        grad.addColorStop(1, "#120a04");
+        ectx.fillStyle = grad;
+        ectx.fillRect(0, 0, 64, 64);
+        const envTex = new THREE.CanvasTexture(envCanvas);
+        envTex.mapping = THREE.EquirectangularReflectionMapping;
+        const envRT = pmrem.fromEquirectangular(envTex);
+        scene.environment = envRT.texture;
+        pmrem.dispose();
+    } catch (e) {
+        /* environment reflections are a nice-to-have; safe to skip if unsupported */
+    }
+
     /* ---------------- cabinet ---------------- */
-    const cabinetMat = new THREE.MeshStandardMaterial({ color: 0x4a2c16, roughness: 0.55, metalness: 0.05 });
+    function woodTexture() {
+        const c = document.createElement("canvas");
+        c.width = 256; c.height = 256;
+        const ctx = c.getContext("2d");
+        ctx.fillStyle = "#4a2c16";
+        ctx.fillRect(0, 0, 256, 256);
+        for (let i = 0; i < 40; i++) {
+            const y = Math.random() * 256;
+            ctx.strokeStyle = `rgba(${Math.random() > 0.5 ? "110,70,35" : "30,15,5"},${0.15 + Math.random() * 0.2})`;
+            ctx.lineWidth = 1 + Math.random() * 2;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            for (let x = 0; x <= 256; x += 32) {
+                ctx.lineTo(x, y + (Math.random() - 0.5) * 14);
+            }
+            ctx.stroke();
+        }
+        const tex = new THREE.CanvasTexture(c);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(2, 2);
+        tex.encoding = THREE.sRGBEncoding;
+        return tex;
+    }
+
+    const cabinetMat = new THREE.MeshStandardMaterial({ map: woodTexture(), roughness: 0.4, metalness: 0.1 });
     const cabinet = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.55, 3.6), cabinetMat);
     cabinet.position.y = -0.275;
     scene.add(cabinet);
 
-    const trimMat = new THREE.MeshStandardMaterial({ color: 0x8a611f, roughness: 0.4, metalness: 0.3 });
+    const trimMat = new THREE.MeshStandardMaterial({ color: 0x8a611f, roughness: 0.35, metalness: 0.4 });
     const trim = new THREE.Mesh(new THREE.BoxGeometry(3.66, 0.06, 3.66), trimMat);
     trim.position.y = -0.03;
     scene.add(trim);
+
+    /* soft fake reflection on the "tabletop" beneath the cabinet */
+    function reflectionTexture() {
+        const c = document.createElement("canvas");
+        c.width = c.height = 128;
+        const ctx = c.getContext("2d");
+        const grad = ctx.createRadialGradient(64, 64, 5, 64, 64, 64);
+        grad.addColorStop(0, "rgba(255,220,160,0.35)");
+        grad.addColorStop(1, "rgba(255,220,160,0)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 128, 128);
+        return new THREE.CanvasTexture(c);
+    }
+    const reflection = new THREE.Mesh(
+        new THREE.CircleGeometry(2.6, 32),
+        new THREE.MeshBasicMaterial({ map: reflectionTexture(), transparent: true, depthWrite: false })
+    );
+    reflection.rotation.x = -Math.PI / 2;
+    reflection.position.y = -0.551;
+    scene.add(reflection);
 
     /* ---------------- turntable ---------------- */
     function grooveTexture() {
@@ -65,7 +144,9 @@
             ctx.lineWidth = 1;
             ctx.stroke();
         }
-        return new THREE.CanvasTexture(c);
+        const tex = new THREE.CanvasTexture(c);
+        tex.encoding = THREE.sRGBEncoding;
+        return tex;
     }
 
     const recordGeo = new THREE.CylinderGeometry(1.55, 1.55, 0.06, 96);
@@ -209,6 +290,14 @@
             });
         }
     };
+
+    if (scene.environment) {
+        [brassMat, chromeMat, armMat, spindleMat].forEach((m) => {
+            m.envMap = scene.environment;
+            m.envMapIntensity = 1.1;
+            m.needsUpdate = true;
+        });
+    }
 
     resize();
     animate();
