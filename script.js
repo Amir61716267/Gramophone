@@ -1,8 +1,6 @@
 const playBtn = document.getElementById("playBtn");
-const record = document.getElementById("record");
 const resetBtn = document.getElementById("resetBtn");
 const music = document.getElementById("music");
-const tonearm = document.getElementById("tonearm");
 const progress = document.getElementById("progress");
 const progressContainer = document.getElementById("progressContainer");
 const timeDisplay = document.getElementById("timeDisplay");
@@ -35,17 +33,13 @@ playBtn.addEventListener("click", () => {
     return;
 }
     if (!isPlaying) {
-        record.classList.add("spin");
-        tonearm.classList.remove("moveArm");
-       void tonearm.offsetWidth;
-       tonearm.classList.add("moveArm");
+       window.Gramo3D && window.Gramo3D.play();
        music.play().catch(() => {});
         playBtn.textContent = "⏸";
         isPlaying = true;
     } else {
-        record.classList.remove("spin");
         music.pause();
-        tonearm.classList.remove("moveArm");
+        window.Gramo3D && window.Gramo3D.pause();
         playBtn.textContent = "▶";
         isPlaying = false;
     }
@@ -59,8 +53,7 @@ music.addEventListener("loadedmetadata", () => {
 });
 resetBtn.addEventListener("click", () => {
 
-    record.classList.remove("spin");
-   tonearm.classList.remove("moveArm");
+   window.Gramo3D && window.Gramo3D.reset();
     music.pause();
 
     music.currentTime = 0;
@@ -74,9 +67,7 @@ resetBtn.addEventListener("click", () => {
 });
 music.addEventListener("ended", () => {
 
-    record.classList.remove("spin");
-
-    tonearm.classList.remove("moveArm");
+   window.Gramo3D && window.Gramo3D.ended();
    playBtn.textContent = "▶";
    isPlaying = false;
 });
@@ -140,21 +131,15 @@ music.addEventListener("canplay", () => {
     music.play().catch(() => {});
 }, { once: true });
 
-record.classList.add("spin");
-
-tonearm.classList.remove("moveArm");
-void tonearm.offsetWidth;
-tonearm.classList.add("moveArm");
+window.Gramo3D && window.Gramo3D.play();
 
 playBtn.textContent = "⏸";
 
 isPlaying = true;
   
 
-  coverImage.style.display = 
-  "none";
-coverImage.style.opacity = "0";
-coverImage.src = "";
+  coverImage.src = "";
+  window.Gramo3D && window.Gramo3D.setCoverTexture(null);
 
 }
 fileInput.addEventListener("change", () => {
@@ -189,19 +174,18 @@ loadMusic(file);
 
     const base64String = btoa(imageData);
 
-    coverImage.src =
+    const dataURL =
         "data:" +
         picture.format +
         ";base64," +
         base64String;
 
-    coverImage.style.display = "block";
-   coverImage.style.opacity = "1";
+    coverImage.src = dataURL;
+    window.Gramo3D && window.Gramo3D.setCoverTexture(dataURL);
 } else {
 
-    coverImage.style.display = "none";
-   coverImage.style.opacity = "0";
     coverImage.src = "";
+    window.Gramo3D && window.Gramo3D.setCoverTexture(null);
 
 }
     },
@@ -211,9 +195,8 @@ loadMusic(file);
         songTitle.textContent = "Unknown Song";
 
         artistName.textContent = "Unknown Artist";
-        coverImage.style.display = "none";
-       coverImage.style.opacity = "0";
-       coverImage.src = "";
+        coverImage.src = "";
+        window.Gramo3D && window.Gramo3D.setCoverTexture(null);
 
     }
 
